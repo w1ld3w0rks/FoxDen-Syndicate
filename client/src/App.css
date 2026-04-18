@@ -42,21 +42,6 @@
   gap: 14px;
 }
 
-.navbarActions input {
-  width: 220px;
-  padding: 12px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(120, 152, 255, 0.18);
-  background: rgba(8, 14, 25, 0.9);
-  color: #eef4ff;
-  outline: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.navbarActions input::placeholder {
-  color: #7d8da8;
-}
-
 .market,
 .heroBadge {
   display: inline-flex;
@@ -67,6 +52,23 @@
   border-radius: 999px;
   background: rgba(9, 18, 34, 0.8);
   color: #b8d0ff;
+}
+
+.liveDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.liveDot.online {
+  background: #ff4f73;
+  box-shadow: 0 0 0 rgba(255, 79, 115, 0.5);
+  animation: livePulse 1.6s ease-out infinite;
+}
+
+.liveDot.offline {
+  background: #7383a4;
 }
 
 .layout {
@@ -234,7 +236,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 
 .price,
@@ -242,49 +244,6 @@
   margin: 8px 0 0;
   font-size: clamp(1.4rem, 3vw, 2.4rem);
   font-weight: 700;
-}
-
-.chart {
-  position: relative;
-  height: 240px;
-  margin-bottom: 18px;
-  border-radius: 24px;
-  border: 1px solid rgba(118, 142, 195, 0.12);
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(8, 18, 35, 0.95), rgba(6, 11, 21, 0.95));
-  background-size: 40px 40px, 40px 40px, auto;
-}
-
-.chartLine,
-.chartGlow {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 100%;
-}
-
-.chartLine::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 24px;
-}
-
-.lineOne::before {
-  clip-path: polygon(0 75%, 12% 68%, 24% 72%, 39% 44%, 53% 52%, 67% 25%, 82% 35%, 100% 14%, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, rgba(60, 140, 255, 0.25), rgba(60, 140, 255, 0));
-  border-bottom: 3px solid #51a2ff;
-}
-
-.lineTwo::before {
-  clip-path: polygon(0 82%, 16% 78%, 28% 70%, 41% 72%, 59% 46%, 73% 55%, 87% 28%, 100% 34%, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, rgba(110, 66, 255, 0.12), rgba(110, 66, 255, 0));
-  border-bottom: 2px solid rgba(140, 120, 255, 0.7);
-}
-
-.chartGlow {
-  background: radial-gradient(circle at 70% 30%, rgba(70, 146, 255, 0.22), transparent 25%);
 }
 
 .info {
@@ -308,6 +267,22 @@
   border: 1px solid rgba(118, 142, 195, 0.12);
 }
 
+.rankBadge {
+  border: 1px solid rgba(94, 240, 165, 0.45);
+  background: rgba(25, 93, 66, 0.45);
+  color: #8af7c0;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.rankBadgeMuted {
+  border-color: rgba(125, 145, 184, 0.25);
+  background: rgba(50, 63, 92, 0.3);
+  color: #91a0bc;
+}
+
 .insightCard {
   padding: 20px;
 }
@@ -324,6 +299,51 @@
 
 .red {
   color: #ff6f91;
+}
+
+.apiError {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 100, 120, 0.28);
+  background: rgba(140, 20, 40, 0.18);
+  color: #ffaab8;
+  font-size: 0.9rem;
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 152, 255, 0.22);
+  background: rgba(8, 14, 25, 0.9);
+  color: #b8d0ff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.2s ease;
+}
+
+.refreshBtn:hover {
+  transform: rotate(30deg);
+  border-color: rgba(86, 141, 255, 0.5);
+}
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 79, 115, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 79, 115, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 79, 115, 0);
+  }
 }
 
 @media (max-width: 1024px) {
@@ -360,9 +380,5 @@
 
   .navbarActions {
     display: grid;
-  }
-
-  .navbarActions input {
-    width: 100%;
   }
 }

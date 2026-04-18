@@ -1,63 +1,53 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { fetchRecommendations } from "./api";
 
-const mockStocks = [
-  {
-    symbol: "AAPL",
-    price: 189.32,
-    change: 1.21,
-    company: "Apple Inc.",
-    volume: "72.4M",
-    sentiment: "Accumulating",
-  },
-  {
-    symbol: "MSFT",
-    price: 420.11,
-    change: 0.85,
-    company: "Microsoft",
-    volume: "31.8M",
-    sentiment: "Momentum",
-  },
-  {
-    symbol: "NVDA",
-    price: 912.44,
-    change: 2.41,
-    company: "NVIDIA",
-    volume: "54.2M",
-    sentiment: "Breakout",
-  },
-  {
-    symbol: "AMZN",
-    price: 182.28,
-    change: -0.38,
-    company: "Amazon",
-    volume: "46.5M",
-    sentiment: "Range-bound",
-  },
-  {
-    symbol: "TSLA",
-    price: 245.9,
-    change: -2.15,
-    company: "Tesla",
-    volume: "89.7M",
-    sentiment: "Volatile",
-  },
+const TEST_TICKERS = [
+  "AAPL",
+  "MSFT",
+  "NVDA",
+  "AMZN",
+  "GOOGL",
+  "GOOG",
+  "META",
+  "TSLA",
+  "BRK.B",
 ];
 
-const marketHighlights = [
-  { label: "S&P 500", value: "+1.2%" },
-  { label: "NASDAQ", value: "+0.9%" },
-  { label: "DOW", value: "-0.3%" },
-];
+function formatFixed(value) {
+  return Number.isFinite(value) ? value.toFixed(4) : "—";
+}
 
-const quickStats = [
-  { label: "Live signals", value: "24" },
-  { label: "Win rate", value: "89%" },
-  { label: "Active traders", value: "1.4k" },
-];
+function formatPercent(value) {
+  return Number.isFinite(value) ? `${value.toFixed(4)}%` : "—";
+}
 
 function App() {
-  const [selected, setSelected] = useState(mockStocks[0]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const tickerRankMap = new Map(
+    recommendations.map((item, index) => [item.ticker, index + 1])
+  );
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const topRecommendations = await fetchRecommendations();
+      setRecommendations(topRecommendations);
+      setSelected(topRecommendations[0] ?? null);
+    } catch (err) {
+      setError(err.message);
+      setRecommendations([]);
+      setSelected(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { loadData(); }, [loadData]);
 
   return (
     <div className="app">
@@ -68,41 +58,64 @@ function App() {
             <h1>Dark market intelligence with a cleaner edge.</h1>
           </div>
           <div className="navbarActions">
-            <input placeholder="Search symbol" aria-label="Search symbol" />
-            <span className="market">Market Open</span>
+            <span className="market">
+              <span
+                className={`liveDot ${!loading && !error ? "online" : "offline"}`}
+                aria-hidden="true"
+              />
+              {loading ? "Connecting 3002…" : error ? "API offline" : "Recommendations live"}
+            </span>
+            {!loading && (
+              <button className="refreshBtn" onClick={loadData} title="Refresh data">
+                ↻
+              </button>
+            )}
           </div>
         </header>
+
+        {error && (
+          <div className="apiError">
+            <strong>API error:</strong> {error}
+          </div>
+        )}
 
         <main className="layout">
           <section className="hero panel">
             <div className="heroCopy">
-              <span className="heroBadge">Realtime trading desk</span>
-              <h2>Sleek analytics in black glass and deep blue light.</h2>
+              <span className="heroBadge">Realtime recommendation desk</span>
+              <h2>Top 3 stock recommendations from your strategy API.</h2>
               <p>
-                Track momentum, spot market shifts, and focus attention on the
-                symbols moving now.
+                Recommendations are generated from Polygon.io API-key data and
+                processed through our server-side scoring engine, so the client
+                receives only ranked outputs instead of raw market payloads.
               </p>
 
               <div className="statsGrid">
-                {quickStats.map((stat) => (
-                  <div key={stat.label} className="statCard">
-                    <span>{stat.label}</span>
-                    <strong>{stat.value}</strong>
-                  </div>
-                ))}
+                <div className="statCard">
+                  <span>Recommendations loaded</span>
+                  <strong>{recommendations.length}</strong>
+                </div>
+                <div className="statCard">
+                  <span>Top ticker</span>
+                  <strong>{recommendations[0]?.ticker ?? "—"}</strong>
+                </div>
+                <div className="statCard">
+                  <span>Top score</span>
+                  <strong>{formatFixed(recommendations[0]?.score)}</strong>
+                </div>
               </div>
             </div>
 
             <div className="heroVisual">
               <div className="glowOrb" />
               <div className="signalCard">
-                <p className="signalLabel">Priority signal</p>
-                <h3>{selected.symbol}</h3>
-                <p>{selected.company}</p>
+                <p className="signalLabel">Top recommendation</p>
+                <h3>{selected?.ticker ?? "—"}</h3>
+                <p>Score: {formatFixed(selected?.score)}</p>
                 <div className="signalMeta">
-                  <span>${selected.price.toFixed(2)}</span>
-                  <span className={selected.change >= 0 ? "green" : "red"}>
-                    {selected.change}%
+                  <span>Return {formatPercent(selected?.return)}</span>
+                  <span className={(selected?.return ?? 0) >= 0 ? "green" : "red"}>
+                    Vol {formatPercent(selected?.volatility)}
                   </span>
                 </div>
               </div>
@@ -112,25 +125,35 @@ function App() {
           <section className="dashboardGrid">
             <aside className="panel watchlist">
               <div className="sectionHeading">
-                <h3>Watchlist</h3>
-                <span>Top movers</span>
+                <h3>Top 3 picks</h3>
+                <span>Ranked by score</span>
               </div>
 
-              {mockStocks.map((stock) => (
+              {loading && recommendations.length === 0 && (
+                <p className="muted">Loading…</p>
+              )}
+
+              {!loading && recommendations.length === 0 && !error && (
+                <p className="muted">No recommendations returned.</p>
+              )}
+
+              {recommendations.map((stock, index) => (
                 <button
-                  key={stock.symbol}
-                  className={`stockCard ${selected.symbol === stock.symbol ? "active" : ""}`}
+                  key={`${stock.ticker}-${index}`}
+                  className={`stockCard ${selected?.ticker === stock.ticker ? "active" : ""}`}
                   onClick={() => setSelected(stock)}
                 >
                   <div>
-                    <strong>{stock.symbol}</strong>
-                    <span>{stock.company}</span>
+                    <strong>
+                      #{index + 1} {stock.ticker}
+                    </strong>
+                    <span>Score {formatFixed(stock.score)}</span>
                   </div>
                   <div>
-                    <strong>${stock.price.toFixed(2)}</strong>
-                    <span className={stock.change >= 0 ? "green" : "red"}>
-                      {stock.change}%
-                    </span>
+                    <strong className={stock.return >= 0 ? "green" : "red"}>
+                      {formatPercent(stock.return)}
+                    </strong>
+                    <span>Vol {formatPercent(stock.volatility)}</span>
                   </div>
                 </button>
               ))}
@@ -138,63 +161,45 @@ function App() {
 
             <section className="panel focusPanel">
               <div className="sectionHeading">
-                <h3>{selected.symbol} focus</h3>
-                <span>{selected.sentiment}</span>
+                <h3>{selected?.ticker ?? "—"} criteria</h3>
+                <span>3-factor detail</span>
               </div>
 
               <div className="priceRow">
                 <div>
-                  <p className="muted">Current price</p>
-                  <p className="price">${selected.price.toFixed(2)}</p>
+                  <p className="muted">Score</p>
+                  <p className="price">{formatFixed(selected?.score)}</p>
                 </div>
                 <div>
-                  <p className="muted">Daily move</p>
-                  <p className={selected.change >= 0 ? "priceChange green" : "priceChange red"}>
-                    {selected.change}%
+                  <p className="muted">Return</p>
+                  <p className={(selected?.return ?? 0) >= 0 ? "priceChange green" : "priceChange red"}>
+                    {formatPercent(selected?.return)}
                   </p>
                 </div>
                 <div>
-                  <p className="muted">Volume</p>
-                  <p className="priceChange">{selected.volume}</p>
+                  <p className="muted">Volatility</p>
+                  <p className="priceChange">{formatPercent(selected?.volatility)}</p>
                 </div>
               </div>
-
-              <div className="chart" aria-hidden="true">
-                <span className="chartLine lineOne" />
-                <span className="chartLine lineTwo" />
-                <span className="chartGlow" />
-              </div>
-
-              <p className="info">
-                Institutional activity remains elevated while momentum stays
-                concentrated in large-cap technology and AI names.
-              </p>
             </section>
 
             <aside className="panel insightPanel">
               <div className="sectionHeading">
-                <h3>Market overview</h3>
-                <span>Session pulse</span>
+                <h3>Stocks Tested</h3>
+                <span>{TEST_TICKERS.length} tickers</span>
               </div>
 
               <div className="overviewList">
-                {marketHighlights.map((item) => (
-                  <div key={item.label} className="overviewItem">
-                    <span>{item.label}</span>
-                    <strong className={item.value.startsWith("-") ? "red" : "green"}>
-                      {item.value}
-                    </strong>
+                {TEST_TICKERS.map((ticker) => (
+                  <div key={ticker} className="overviewItem">
+                    <span>{ticker}</span>
+                    {tickerRankMap.has(ticker) ? (
+                      <span className="rankBadge">#{tickerRankMap.get(ticker)}</span>
+                    ) : (
+                      <span className="rankBadge rankBadgeMuted">—</span>
+                    )}
                   </div>
                 ))}
-              </div>
-
-              <div className="insightCard">
-                <p className="muted">Desk insight</p>
-                <h4>Risk remains controlled despite heavier volume.</h4>
-                <p>
-                  Rotation is still favoring growth, but defensive names are
-                  holding key levels into the close.
-                </p>
               </div>
             </aside>
           </section>
