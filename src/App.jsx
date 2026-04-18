@@ -1,37 +1,40 @@
 import { useState, useEffect } from "react";
 
 export default function App() {
-  const [stocks, setStocks] = useState([]);
+  const [topStocks, setTopStocks] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      const tickers = [
-      "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA",
-      "TSLA", "AMD", "NFLX", "PLTR",
-      "KO", "PG", "JNJ", "PEP"
-    ];
+      const res = await fetch("http://localhost:3001/rankings");
+      const data = await res.json();
 
-      const results = await Promise.all(
-        tickers.map(async (t) => {
-          const res = await fetch(`http://localhost:3001/stock/${t}`);
-          return res.json();
-        })
-      );
-
-      setStocks(results);
+      setTopStocks(data.top3);
     }
 
     fetchData();
   }, []);
 
   return (
-    <div>
-      <h1>Stock Data</h1>
+    <div style={{ padding: 20, fontFamily: "Arial" }}>
+      <h1>🏆 Top 3 Stocks Today</h1>
 
-      {stocks.map((s) => (
-        <div key={s.name}>
-          <h3>{s.name}</h3>
-          <p>{JSON.stringify(s.prices)}</p>
+      {topStocks.map((s, i) => (
+        <div
+          key={s.ticker}
+          style={{
+            border: "1px solid #ddd",
+            margin: "10px 0",
+            padding: 10,
+            borderRadius: 8,
+          }}
+        >
+          <h2>
+            #{i + 1} {s.ticker}
+          </h2>
+
+          <p>Score: {s.compositeScore.toFixed(4)}</p>
+          <p>Return: {s.dailyReturnPct.toFixed(2)}%</p>
+          <p>Volatility: {s.rangePct.toFixed(2)}%</p>
         </div>
       ))}
     </div>
