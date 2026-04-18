@@ -5,7 +5,7 @@ export default function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await fetch("http://localhost:3001/rankings");
+      const res = await fetch("http://localhost:3001/recommendations");
       const data = await res.json();
 
       setTopStocks(data.top3);
