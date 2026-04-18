@@ -8,7 +8,7 @@ export default function App() {
       const res = await fetch("http://localhost:3001/recommendations");
       const data = await res.json();
 
-      setTopStocks(data.top3);
+      setTopStocks(data.recommendations || []);
     }
 
     fetchData();
@@ -32,9 +32,9 @@ export default function App() {
             #{i + 1} {s.ticker}
           </h2>
 
-          <p>Score: {s.compositeScore.toFixed(4)}</p>
-          <p>Return: {s.dailyReturnPct.toFixed(2)}%</p>
-          <p>Volatility: {s.rangePct.toFixed(2)}%</p>
+          <p>Score: {s.score?.toFixed(4)}</p>
+          <p>Return: {s.return?.toFixed(4)}%</p>
+          <p>Volatility: {s.volatility?.toFixed(4)}%</p>
         </div>
       ))}
     </div>
