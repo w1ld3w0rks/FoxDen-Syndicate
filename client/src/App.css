@@ -1,38 +1,446 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(35, 94, 255, 0.2), transparent 28%),
+    radial-gradient(circle at 90% 20%, rgba(18, 80, 166, 0.25), transparent 22%),
+    linear-gradient(145deg, #020409 0%, #07111f 45%, #020305 100%);
+  color: #f3f7ff;
+}
+
+.shell {
+  width: min(1220px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+}
+
+.navbar {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.topHero {
+  padding: 20px 22px;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(41, 107, 255, 0.28), transparent 50%),
+    linear-gradient(180deg, rgba(30, 55, 95, 0.72), rgba(20, 40, 70, 0.72));
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: #79a7ff;
+  font-size: 0.72rem;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+}
+
+.navbarDescription {
+  margin: 10px 0 0;
+  max-width: 700px;
+  color: #9cb0d4;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.navbarActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.market {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(119, 167, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(9, 18, 34, 0.8);
+  color: #b8d0ff;
+}
+
+.liveDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.liveDot.online {
+  background: #ff4f73;
+  box-shadow: 0 0 0 rgba(255, 79, 115, 0.5);
+  animation: livePulse 1.6s ease-out infinite;
+}
+
+.liveDot.offline {
+  background: #7383a4;
+}
+
+.refreshBtn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 152, 255, 0.22);
+  background: rgba(8, 14, 25, 0.9);
+  color: #b8d0ff;
+  font-size: 1.05rem;
+  cursor: pointer;
 }
 
-.App-link {
-  color: #61dafb;
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-@keyframes App-logo-spin {
+.panel {
+  border: 1px solid rgba(99, 133, 220, 0.18);
+  background: linear-gradient(180deg, rgba(10, 17, 31, 0.92), rgba(5, 9, 17, 0.94));
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 0;
+}
+
+.mainPanel {
+  overflow: hidden;
+}
+
+.watchlist,
+.focusPanel {
+  padding: 22px;
+}
+
+.watchlist {
+  border-right: 1px solid rgba(118, 142, 195, 0.16);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sectionHeading h3,
+.candleHeader h4 {
+  margin: 0;
+}
+
+.sectionHeading span,
+.muted {
+  color: #8ea1c3;
+}
+
+.stockCard {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(118, 144, 199, 0.12);
+  background: rgba(11, 17, 29, 0.72);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stockCard:hover,
+.stockCard.active {
+  border-color: rgba(86, 141, 255, 0.38);
+  background: linear-gradient(180deg, rgba(13, 24, 41, 0.95), rgba(9, 15, 27, 0.95));
+}
+
+.stockCard div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stockCard span {
+  color: #8ea1c3;
+}
+
+.priceRow {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.fourCols {
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+}
+
+.price,
+.priceChange {
+  margin: 8px 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.45rem);
+  font-weight: 700;
+}
+
+.candleCard {
+  border: 1px solid rgba(118, 142, 195, 0.14);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(7, 13, 24, 0.8);
+}
+
+.candleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.candleGraph {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.candleScale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #8ea1c3;
+  font-size: 0.82rem;
+}
+
+.candleCanvas {
+  position: relative;
+  height: 220px;
+  border-radius: 14px;
+  border: 1px solid rgba(118, 142, 195, 0.12);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(8, 18, 35, 0.95), rgba(6, 11, 21, 0.95));
+  background-size: 34px 34px, 34px 34px, auto;
+}
+
+.candleWick {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  background: #b8d0ff;
+  transform: translateX(-50%);
+  border-radius: 4px;
+}
+
+.candleBody {
+  position: absolute;
+  left: 50%;
+  width: 74px;
+  transform: translateX(-50%);
+  border-radius: 6px;
+}
+
+.candleBody.bull {
+  background: rgba(76, 224, 154, 0.45);
+  border: 1px solid #5ef0a5;
+}
+
+.candleBody.bear {
+  background: rgba(255, 111, 145, 0.4);
+  border: 1px solid #ff6f91;
+}
+
+.candleTick {
+  position: absolute;
+  font-size: 0.76rem;
+  color: #d5e4ff;
+  background: rgba(5, 11, 20, 0.85);
+  border: 1px solid rgba(115, 142, 197, 0.2);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.openTick {
+  left: 18px;
+  transform: translateY(-50%);
+}
+
+.closeTick {
+  right: 18px;
+  transform: translateY(-50%);
+}
+
+.testedStripPanel {
+  padding: 10px 4px 2px;
+  border-top: 1px solid rgba(118, 142, 195, 0.18);
+}
+
+.testedStripViewport {
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 6px;
+}
+
+.testedStripTrack {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  animation: tickerLoop 30s linear infinite;
+}
+
+.testedTickerChip {
+  flex: 0 0 auto;
+  min-width: 122px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(118, 142, 195, 0.16);
+  background: rgba(10, 16, 27, 0.72);
+}
+
+.testedTickerChip span:first-child {
+  color: #c9d9f8;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.testedTickerChip.topRank {
+  border-color: rgba(94, 240, 165, 0.45);
+  background: linear-gradient(180deg, rgba(18, 47, 38, 0.88), rgba(12, 33, 27, 0.88));
+  box-shadow: inset 0 0 0 1px rgba(94, 240, 165, 0.12);
+}
+
+.testedStripTrack:hover {
+  animation-play-state: paused;
+}
+
+.rankBadge {
+  border: 1px solid rgba(94, 240, 165, 0.45);
+  background: rgba(25, 93, 66, 0.45);
+  color: #8af7c0;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.rankBadgeMuted {
+  border-color: rgba(125, 145, 184, 0.25);
+  background: rgba(50, 63, 92, 0.3);
+  color: #91a0bc;
+}
+
+.green {
+  color: #5ef0a5;
+}
+
+.red {
+  color: #ff6f91;
+}
+
+.apiError {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 100, 120, 0.28);
+  background: rgba(140, 20, 40, 0.18);
+  color: #ffaab8;
+  font-size: 0.9rem;
+}
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 79, 115, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 79, 115, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 79, 115, 0);
+  }
+}
+
+@keyframes tickerLoop {
   from {
-    transform: rotate(0deg);
+    transform: translateX(0);
   }
   to {
-    transform: rotate(360deg);
+    transform: translateX(calc(-50% - 5px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testedStripTrack {
+    animation: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .watchlist {
+    border-right: 0;
+    border-bottom: 1px solid rgba(118, 142, 195, 0.16);
+  }
+
+  .fourCols {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .shell {
+    width: min(100% - 24px, 1220px);
+    padding-top: 20px;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topHero {
+    padding: 16px;
+  }
+
+  .watchlist,
+  .focusPanel {
+    padding: 18px;
+  }
+
+  .testedStripPanel {
+    padding: 12px 0 2px;
+  }
+
+  .candleGraph {
+    grid-template-columns: 1fr;
+  }
+
+  .candleScale {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .fourCols {
+    grid-template-columns: 1fr;
   }
 }
