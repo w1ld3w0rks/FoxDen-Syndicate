@@ -5,7 +5,11 @@ export default function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const tickers = ["AAPL", "MSFT", "TSLA"];
+      const tickers = [
+      "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA",
+      "TSLA", "AMD", "NFLX", "PLTR",
+      "KO", "PG", "JNJ", "PEP"
+    ];
 
       const results = await Promise.all(
         tickers.map(async (t) => {
